@@ -137,7 +137,12 @@ class GoogleCloudStorage(Storage):
         and ./file.txt work.  Note that clean_name adds ./ to some paths so
         they need to be fixed here.
         """
-        return safe_join('', name)
+        # o = safe_join('', name)
+        # print 'called normalize'
+        # print o
+        name = name[22:]
+
+        return name
 
     def _encode_name(self, name):
         return smart_str(name, encoding=self.file_name_charset)
@@ -199,6 +204,7 @@ class GoogleCloudStorage(Storage):
         return list(dirs), files
 
     def _get_blob(self, name):
+        print name
         # Wrap google.cloud.storage's blob to raise if the file doesn't exist
         blob = self.bucket.get_blob(name)
 
@@ -224,10 +230,29 @@ class GoogleCloudStorage(Storage):
         return updated if setting('USE_TZ') else timezone.make_naive(updated)
 
     def url(self, name):
+        print 'called url'
+        print name
         # Preserve the trailing slash after normalizing the path.
         name = self._normalize_name(clean_name(name))
+
+        print name
         blob = self._get_blob(self._encode_name(name))
-        return blob.public_url
+        print dir(blob)
+        print blob.content_type
+        print blob.content_disposition
+        # blob.content_disposition = 'inline; filename="image1.jpg"'
+        # blob.content_type = 'image/jpeg'
+        blob.patch()
+        blob.make_public()
+        url_lifetime = 36000000000  # Seconds in an hour
+        print blob.metadata
+        print blob.media_link
+        print blob.content_type
+        print blob.content_disposition
+        # serving_url = blob.generate_signed_url(url_lifetime, content_type='image/jpeg')
+
+        return blob.media_link
+        # return serving_url
 
     def get_available_name(self, name, max_length=None):
         if self.file_overwrite:

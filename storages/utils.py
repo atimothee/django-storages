@@ -26,23 +26,30 @@ def setting(name, default=None, strict=False):
 
 
 def clean_name(name):
+    print 'clean name called'
     """
     Cleans the name so that Windows style paths work
     """
     # Normalize Windows style paths
-    clean_name = posixpath.normpath(name).replace('\\', '/')
-
-    # os.path.normpath() can strip trailing slashes so we implement
-    # a workaround here.
-    if name.endswith('/') and not clean_name.endswith('/'):
-        # Add a trailing slash as it was stripped.
-        clean_name = clean_name + '/'
+    # clean_name = posixpath.normpath(name).replace('\\', '/')
+    #
+    # # os.path.normpath() can strip trailing slashes so we implement
+    # # a workaround here.
+    # if name.endswith('/') and not clean_name.endswith('/'):
+    #     # Add a trailing slash as it was stripped.
+    #     clean_name = clean_name + '/'
 
     # Given an empty string, os.path.normpath() will return ., which we don't want
-    if clean_name == '.':
-        clean_name = ''
+    # if clean_name == '.':
+    #     clean_name = ''
 
-    return clean_name
+    if name[0] == '/':
+        name = name[1:]
+
+    print name
+    return name
+
+    # return clean_name
 
 
 def safe_join(base, *paths):
