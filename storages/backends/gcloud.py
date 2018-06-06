@@ -137,19 +137,16 @@ class GoogleCloudStorage(Storage):
         and ./file.txt work.  Note that clean_name adds ./ to some paths so
         they need to be fixed here.
         """
-        # o = safe_join('', name)
-        # print 'called normalize'
-        # print o
         if 'panya-bot.appspot.com' in name:
-            print 'has appspot in name'
             name = name[22:]
             return name
-        print 'does not have appspot in name'
         try:
             return safe_join(self.location, name)
-        except ValueError:
-            raise SuspiciousOperation("Attempted access to '%s' denied." %
-                                      name)
+        except Exception:
+            pass
+            # raise SuspiciousOperation("Attempted access to '%s' denied." %
+            #                           name)
+        return name
 
 
 
