@@ -1,7 +1,7 @@
 import mimetypes
 from tempfile import SpooledTemporaryFile
 
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation
 from django.core.files.base import File
 from django.core.files.storage import Storage
 from django.utils import timezone
@@ -140,9 +140,18 @@ class GoogleCloudStorage(Storage):
         # o = safe_join('', name)
         # print 'called normalize'
         # print o
-        name = name[22:]
+        if 'panya-bot.appspot.com' in name:
+            print 'has appspot in name'
+            name = name[22:]
+            return name
+        print 'does not have appspot in name'
+        try:
+            return safe_join(self.location, name)
+        except ValueError:
+            raise SuspiciousOperation("Attempted access to '%s' denied." %
+                                      name)
 
-        return name
+
 
     def _encode_name(self, name):
         return smart_str(name, encoding=self.file_name_charset)
